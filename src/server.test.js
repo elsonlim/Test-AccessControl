@@ -14,7 +14,7 @@ describe("User", () => {
   beforeEach(async () => {
     const loginRes = await request(app)
       .post("/login")
-      .send({ role: "user" })
+      .send({ roles: ["user"] })
       .set("Accept", "application/json");
 
     expect(loginRes.status).toBe(200);
@@ -54,7 +54,7 @@ describe("ts Approver", () => {
   beforeEach(async () => {
     const loginRes = await request(app)
       .post("/login")
-      .send({ role: "tsApprover" })
+      .send({ roles: ["tsApprover"] })
       .set("Accept", "application/json");
 
     expect(loginRes.status).toBe(200);
@@ -94,7 +94,7 @@ describe("Admin", () => {
   beforeEach(async () => {
     const loginRes = await request(app)
       .post("/login")
-      .send({ role: "admin" })
+      .send({ roles: ["admin"] })
       .set("Accept", "application/json");
 
     expect(loginRes.status).toBe(200);
@@ -120,6 +120,46 @@ describe("Admin", () => {
   test("Create /ts/verify", async () => {
     const res = await request(app).post("/ts/verify").set("Cookie", cookie);
     expect(res.status).toBe(403);
+  });
+
+  test("Create /ts/approve", async () => {
+    const res = await request(app).post("/ts/approve").set("Cookie", cookie);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe("User + Admin", () => {
+  let cookie = "";
+
+  beforeEach(async () => {
+    const loginRes = await request(app)
+      .post("/login")
+      .send({ roles: ["user", "admin"] })
+      .set("Accept", "application/json");
+
+    expect(loginRes.status).toBe(200);
+
+    cookie = loginRes.headers["set-cookie"];
+  });
+
+  test("Create /ts", async () => {
+    const res = await request(app).post("/ts").set("Cookie", cookie);
+    expect(res.status).toBe(200);
+  });
+
+  test("Read /ts", async () => {
+    const res = await request(app).get("/ts").set("Cookie", cookie);
+    expect(res.status).toBe(200);
+  });
+
+  test("Delete /ts", async () => {
+    const res = await request(app).delete("/ts").set("Cookie", cookie);
+    expect(res.status).toBe(200);
+  });
+
+  test("Create /ts/verify", async () => {
+    const res = await request(app).post("/ts/verify").set("Cookie", cookie);
+    expect(res.status).toBe(200);
   });
 
   test("Create /ts/approve", async () => {

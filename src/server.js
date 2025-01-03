@@ -10,22 +10,22 @@ app.get("/", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const { role } = req.body;
+  const { roles } = req.body;
 
-  if (!role) {
+  if (!roles) {
     return res
       .status(400)
       .json({ message: "Role is required in the request body" });
   }
 
-  res.cookie("user", JSON.stringify({ role }), {
+  res.cookie("user", JSON.stringify({ roles }), {
     httpOnly: true,
     httpOnly: true,
     secure: false,
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
-  res.status(200).json({ message: "Logged in and cookie set", role });
+  res.status(200).json({ message: "Logged in and cookie set", roles });
 });
 
 const extractUserFromCookie = (req, res, next) => {
